@@ -35,21 +35,23 @@ public class LoanController {
      * Start process
      * http://localhost:10101/camunda/api/engine/engine/default/process-definition/loan-process-v1:1:c23d33e1-293c-11ec-a01b-0242e5063be4/submit-form
      *
-     * @param processInstanceId
+     * @param key
      * @return
      */
-    @PostMapping(value = "/loan/ready/{process-instance-id}")
+    @PostMapping(value = "/loan/ready/{key}")
     public ResponseEntity<String> loan(
-            @PathVariable(name = "process-instance-id") String processInstanceId
+            @PathVariable(name = "key") String key
     ) {
-        WorkflowLogger.info(logger, "loan", "loan done for process instance id: " + processInstanceId);
+        WorkflowLogger.info(logger, "loan", "loan done for key id: " + key);
         try {
-            if (StringUtils.isEmpty(processInstanceId)) {
+            if (StringUtils.isEmpty(key)) {
                 WorkflowLogger.error(logger, "loan", "Process Instance Id cannot be null or empty");
                 return ResponseEntity.badRequest().body("Process Instance Id cannot be null or empty");
             }
             Map<String, Object> variables = Collections.singletonMap("date", LocalDateTime.now());
-            String result = runtimeService.startProcessInstanceByKey(processInstanceId, variables).getProcessInstanceId();
+            //loan-process-v1
+            String result = runtimeService.startProcessInstanceByKey(key, variables).getProcessInstanceId();
+            //resull is the ID
             return ResponseEntity.ok().body(result + " is ready to recieved.");
 
         } catch (Exception e) {
